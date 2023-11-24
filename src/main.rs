@@ -53,11 +53,10 @@ impl Game {
     }
 
     fn update(&mut self) {
-        self.dy += 1;
-        if !self.is_vertical_collision() {
+        if self.dy != self.projection_dy {
+            self.dy += 1;
             return
         }
-        self.dy -= 1;
         self.place();
         let tetromino = Tetromino::random();
         self.tetromino = tetromino;
