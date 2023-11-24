@@ -61,6 +61,7 @@ const fn s(orientation: &Orientation) -> [[usize; 2]; 4] {
     }
 }
 
+#[derive(Copy, Clone)]
 enum Orientation {
     Up,
     Right,
@@ -68,6 +69,7 @@ enum Orientation {
     Left,
 }
 
+#[derive(Copy, Clone)]
 pub struct Tetromino {
     rotations: fn(orientation: &Orientation) -> [[usize; 2]; 4],
     orientation: Orientation,
