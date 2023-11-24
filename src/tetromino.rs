@@ -3,191 +3,59 @@ use rand::{
     random, Rng,
 };
 
-const MATRIX_SIZE: usize = 4;
-
-type Matrix = [[bool; MATRIX_SIZE]; MATRIX_SIZE];
-/// Matrices are based on the [Super Rotation System](https://tetris.wiki/Super_Rotation_System)
-
-const fn l(orientation: &Orientation) -> Matrix {
+const fn l(orientation: &Orientation) -> [[usize; 2]; 4] {
     match orientation {
-        Orientation::Up => [
-            [false, false, true, false],
-            [true, true, true, false],
-            [false, false, false, false],
-            [false, false, false, false],
-        ],
-        Orientation::Right => [
-            [false, true, false, false],
-            [false, true, false, false],
-            [false, true, true, false],
-            [false, false, false, false],
-        ],
-        Orientation::Down => [
-            [false, false, false, false],
-            [true, true, true, false],
-            [true, false, false, false],
-            [false, false, false, false],
-        ],
-        Orientation::Left => [
-            [true, true, false, false],
-            [false, true, false, false],
-            [false, true, false, false],
-            [false, false, false, false],
-        ],
+        Orientation::Up => [[0, 2], [1, 0], [1, 1], [1, 2]],
+        Orientation::Right => [[0, 1], [1, 1], [2, 1], [2, 2]],
+        Orientation::Down => [[1, 0], [1, 1], [1, 2], [2, 0]],
+        Orientation::Left => [[0, 0], [0, 1], [1, 1], [2, 1]],
     }
 }
 
-const fn j(orientation: &Orientation) -> Matrix {
+const fn j(orientation: &Orientation) -> [[usize; 2]; 4] {
     match orientation {
-        Orientation::Up => [
-            [true, false, false, false],
-            [true, true, true, false],
-            [false, false, false, false],
-            [false, false, false, false],
-        ],
-        Orientation::Right => [
-            [false, true, true, false],
-            [false, true, false, false],
-            [false, true, false, false],
-            [false, false, false, false],
-        ],
-        Orientation::Down => [
-            [false, false, false, false],
-            [true, true, true, false],
-            [false, false, true, false],
-            [false, false, false, false],
-        ],
-        Orientation::Left => [
-            [false, true, false, false],
-            [false, true, false, false],
-            [true, true, false, false],
-            [false, false, false, false],
-        ],
+        Orientation::Up => [[0, 0], [1, 0], [1, 1], [1, 2]],
+        Orientation::Right => [[0, 1], [0, 2], [1, 1], [2, 1]],
+        Orientation::Down => [[1, 0], [1, 1], [1, 2], [2, 2]],
+        Orientation::Left => [[0, 1], [1, 1], [2, 0], [2, 1]],
+    }
+}
+const fn o(_orientation: &Orientation) -> [[usize; 2]; 4] {
+    [[1, 1], [1, 2], [2, 1], [2, 2]]
+}
+const fn i(orientation: &Orientation) -> [[usize; 2]; 4] {
+    match orientation {
+        Orientation::Up => [[1, 0], [1, 1], [1, 2], [1, 3]],
+        Orientation::Right => [[0, 2], [1, 2], [2, 2], [3, 2]],
+        Orientation::Down => [[2, 0], [2, 1], [2, 2], [2, 3]],
+        Orientation::Left => [[0, 1], [1, 1], [2, 1], [3, 1]],
     }
 }
 
-const fn o(_orientation: &Orientation) -> Matrix {
-    [
-        [false, false, false, false],
-        [false, true, true, false],
-        [false, true, true, false],
-        [false, false, false, false],
-    ]
-}
-
-const fn i(orientation: &Orientation) -> Matrix {
+const fn t(orientation: &Orientation) -> [[usize; 2]; 4] {
     match orientation {
-        Orientation::Up => [
-            [false, false, false, false],
-            [true, true, true, true],
-            [false, false, false, false],
-            [false, false, false, false],
-        ],
-        Orientation::Right => [
-            [false, false, true, false],
-            [false, false, true, false],
-            [false, false, true, false],
-            [false, false, true, false],
-        ],
-        Orientation::Down => [
-            [false, false, false, false],
-            [false, false, false, false],
-            [true, true, true, true],
-            [false, false, false, false],
-        ],
-        Orientation::Left => [
-            [false, true, false, false],
-            [false, true, false, false],
-            [false, true, false, false],
-            [false, true, false, false],
-        ],
+        Orientation::Up => [[0, 1], [1, 0], [1, 1], [1, 2]],
+        Orientation::Right => [[0, 1], [1, 1], [1, 2], [2, 1]],
+        Orientation::Down => [[1, 0], [1, 1], [1, 2], [2, 1]],
+        Orientation::Left => [[0, 1], [1, 0], [1, 1], [2, 1]],
     }
 }
 
-const fn t(orientation: &Orientation) -> Matrix {
+const fn z(orientation: &Orientation) -> [[usize; 2]; 4] {
     match orientation {
-        Orientation::Up => [
-            [false, true, false, false],
-            [true, true, true, false],
-            [false, false, false, false],
-            [false, false, false, false],
-        ],
-        Orientation::Right => [
-            [false, true, false, false],
-            [false, true, true, false],
-            [false, true, false, false],
-            [false, false, false, false],
-        ],
-        Orientation::Down => [
-            [false, false, false, false],
-            [true, true, true, false],
-            [false, true, false, false],
-            [false, false, false, false],
-        ],
-        Orientation::Left => [
-            [false, true, false, false],
-            [true, true, false, false],
-            [false, true, false, false],
-            [false, false, false, false],
-        ],
+        Orientation::Up => [[0, 0], [0, 1], [1, 1], [1, 2]],
+        Orientation::Right => [[0, 2], [1, 1], [1, 2], [2, 1]],
+        Orientation::Down => [[1, 0], [1, 1], [2, 1], [2, 2]],
+        Orientation::Left => [[0, 0], [1, 0], [1, 1], [2, 1]],
     }
 }
 
-const fn z(orientation: &Orientation) -> Matrix {
+const fn s(orientation: &Orientation) -> [[usize; 2]; 4] {
     match orientation {
-        Orientation::Up => [
-            [true, true, false, false],
-            [false, true, true, false],
-            [false, false, false, false],
-            [false, false, false, false],
-        ],
-        Orientation::Right => [
-            [false, false, true, false],
-            [false, true, true, false],
-            [false, true, false, false],
-            [false, false, false, false],
-        ],
-        Orientation::Down => [
-            [false, false, false, false],
-            [true, true, false, false],
-            [false, true, true, false],
-            [false, false, false, false],
-        ],
-        Orientation::Left => [
-            [true, false, false, false],
-            [true, true, false, false],
-            [false, true, false, false],
-            [false, false, false, false],
-        ],
-    }
-}
-
-const fn s(orientation: &Orientation) -> Matrix {
-    match orientation {
-        Orientation::Up => [
-            [false, true, true, false],
-            [true, true, false, false],
-            [false, false, false, false],
-            [false, false, false, false],
-        ],
-        Orientation::Right => [
-            [false, true, false, false],
-            [false, true, true, false],
-            [false, false, true, false],
-            [false, false, false, false],
-        ],
-        Orientation::Down => [
-            [false, false, false, false],
-            [false, true, true, false],
-            [true, true, false, false],
-            [false, false, false, false],
-        ],
-        Orientation::Left => [
-            [true, false, false, false],
-            [true, true, false, false],
-            [false, true, false, false],
-            [false, false, false, false],
-        ],
+        Orientation::Up => [[0, 1], [0, 2], [1, 0], [1, 1]],
+        Orientation::Right => [[0, 1], [1, 1], [1, 2], [2, 2]],
+        Orientation::Down => [[1, 1], [1, 2], [2, 0], [2, 1]],
+        Orientation::Left => [[0, 0], [1, 0], [1, 1], [2, 1]],
     }
 }
 
@@ -199,12 +67,12 @@ enum Orientation {
 }
 
 pub struct Tetromino {
-    rotations: fn(orientation: &Orientation) -> Matrix,
+    rotations: fn(orientation: &Orientation) -> [[usize; 2]; 4],
     orientation: Orientation,
 }
 
 impl Tetromino {
-    fn new(rotations: fn(orientation: &Orientation) -> Matrix) -> Self {
+    fn new(rotations: fn(orientation: &Orientation) -> [[usize; 2]; 4]) -> Self {
         Tetromino {
             rotations,
             orientation: Orientation::Up,
@@ -229,7 +97,7 @@ impl Tetromino {
             Orientation::Left => Orientation::Down,
         };
     }
-    pub fn matrix(&self) -> Matrix {
+    pub fn blocks(&self) -> [[usize; 2]; 4] {
         (self.rotations)(&self.orientation)
     }
 }
