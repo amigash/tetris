@@ -1,11 +1,11 @@
-use std::collections::BTreeSet;
+use graphics::render;
 use macroquad::prelude::*;
 use macroquad_canvas::Canvas2D;
+use std::collections::BTreeSet;
 use tetromino::Tetromino;
-use graphics::render;
 
-mod tetromino;
 mod graphics;
+mod tetromino;
 
 const WIDTH: usize = 10;
 const HEIGHT: usize = 20;
@@ -118,38 +118,42 @@ impl Game {
     }
 
     fn handle_input(&mut self) {
-        if is_key_pressed(KeyCode::Left) {
-            self.dx -= 1;
-            if self.is_horizontal_collision() {
-                self.dx += 1;
-            }
-        }
-        if is_key_pressed(KeyCode::Right) {
-            self.dx += 1;
-            if self.is_horizontal_collision() {
+        let Some(key) = get_last_key_pressed() else {
+            return;
+        };
+        match key {
+            KeyCode::Left => {
                 self.dx -= 1;
+                if self.is_horizontal_collision() {
+                    self.dx += 1;
+                }
             }
-        }
-        if is_key_pressed(KeyCode::Up) {
-            self.tetromino.rotate_clockwise();
-            if self.is_horizontal_collision() {
-                self.tetromino.rotate_counterclockwise();
-            } else {
-                self.projection.rotate_clockwise();
-                self.update_projection();
+            KeyCode::Right => {
+                self.dx += 1;
+                if self.is_horizontal_collision() {
+                    self.dx -= 1;
+                }
             }
-        }
-        if is_key_pressed(KeyCode::Down) {
-            self.tetromino.rotate_counterclockwise();
-            if self.is_horizontal_collision() {
+            KeyCode::Up => {
                 self.tetromino.rotate_clockwise();
-            } else {
-                self.projection.rotate_counterclockwise();
-                self.update_projection();
+                if self.is_horizontal_collision() {
+                    self.tetromino.rotate_counterclockwise();
+                } else {
+                    self.projection.rotate_clockwise();
+                    self.update_projection();
+                }
             }
-        }
-        if is_key_pressed(KeyCode::Space) {
-            self.drop();
+            KeyCode::Down => {
+                self.tetromino.rotate_counterclockwise();
+                if self.is_horizontal_collision() {
+                    self.tetromino.rotate_clockwise();
+                } else {
+                    self.projection.rotate_counterclockwise();
+                    self.update_projection();
+                }
+            }
+            KeyCode::Space => self.drop(),
+            _ => {}
         }
     }
 

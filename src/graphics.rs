@@ -1,6 +1,6 @@
-use macroquad::prelude::*;
 use crate::Game;
-use crate::{HEIGHT, WIDTH, Block};
+use crate::{Block, HEIGHT, WIDTH};
+use macroquad::prelude::*;
 
 pub fn render(game: &Game) {
     fn draw_block(block: Block, color: Color) {
