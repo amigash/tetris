@@ -3,7 +3,7 @@ use rand::{
     random, Rng,
 };
 
-const fn l(orientation: &Orientation) -> [[usize; 2]; 4] {
+const fn l(orientation: Orientation) -> [[usize; 2]; 4] {
     match orientation {
         Orientation::Up => [[0, 2], [1, 0], [1, 1], [1, 2]],
         Orientation::Right => [[0, 1], [1, 1], [2, 1], [2, 2]],
@@ -12,7 +12,7 @@ const fn l(orientation: &Orientation) -> [[usize; 2]; 4] {
     }
 }
 
-const fn j(orientation: &Orientation) -> [[usize; 2]; 4] {
+const fn j(orientation: Orientation) -> [[usize; 2]; 4] {
     match orientation {
         Orientation::Up => [[0, 0], [1, 0], [1, 1], [1, 2]],
         Orientation::Right => [[0, 1], [0, 2], [1, 1], [2, 1]],
@@ -21,11 +21,11 @@ const fn j(orientation: &Orientation) -> [[usize; 2]; 4] {
     }
 }
 
-const fn o(_orientation: &Orientation) -> [[usize; 2]; 4] {
+const fn o(_orientation: Orientation) -> [[usize; 2]; 4] {
     [[1, 1], [1, 2], [2, 1], [2, 2]]
 }
 
-const fn i(orientation: &Orientation) -> [[usize; 2]; 4] {
+const fn i(orientation: Orientation) -> [[usize; 2]; 4] {
     match orientation {
         Orientation::Up => [[1, 0], [1, 1], [1, 2], [1, 3]],
         Orientation::Right => [[0, 2], [1, 2], [2, 2], [3, 2]],
@@ -34,7 +34,7 @@ const fn i(orientation: &Orientation) -> [[usize; 2]; 4] {
     }
 }
 
-const fn t(orientation: &Orientation) -> [[usize; 2]; 4] {
+const fn t(orientation: Orientation) -> [[usize; 2]; 4] {
     match orientation {
         Orientation::Up => [[0, 1], [1, 0], [1, 1], [1, 2]],
         Orientation::Right => [[0, 1], [1, 1], [1, 2], [2, 1]],
@@ -43,7 +43,7 @@ const fn t(orientation: &Orientation) -> [[usize; 2]; 4] {
     }
 }
 
-const fn z(orientation: &Orientation) -> [[usize; 2]; 4] {
+const fn z(orientation: Orientation) -> [[usize; 2]; 4] {
     match orientation {
         Orientation::Up => [[0, 0], [0, 1], [1, 1], [1, 2]],
         Orientation::Right => [[0, 2], [1, 1], [1, 2], [2, 1]],
@@ -52,7 +52,7 @@ const fn z(orientation: &Orientation) -> [[usize; 2]; 4] {
     }
 }
 
-const fn s(orientation: &Orientation) -> [[usize; 2]; 4] {
+const fn s(orientation: Orientation) -> [[usize; 2]; 4] {
     match orientation {
         Orientation::Up => [[0, 1], [0, 2], [1, 0], [1, 1]],
         Orientation::Right => [[0, 1], [1, 1], [1, 2], [2, 2]],
@@ -71,13 +71,13 @@ enum Orientation {
 
 #[derive(Copy, Clone)]
 pub struct Tetromino {
-    rotations: fn(orientation: &Orientation) -> [[usize; 2]; 4],
+    rotations: fn(orientation: Orientation) -> [[usize; 2]; 4],
     orientation: Orientation,
     pub color: u32
 }
 
 impl Tetromino {
-    fn new(rotations: fn(orientation: &Orientation) -> [[usize; 2]; 4], color: u32) -> Self {
+    fn new(rotations: fn(orientation: Orientation) -> [[usize; 2]; 4], color: u32) -> Self {
         Tetromino {
             rotations,
             orientation: Orientation::Up,
@@ -104,20 +104,20 @@ impl Tetromino {
         };
     }
     pub fn blocks(&self) -> [[usize; 2]; 4] {
-        (self.rotations)(&self.orientation)
+        (self.rotations)(self.orientation)
     }
 }
 
 impl Distribution<Tetromino> for Standard {
     fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> Tetromino {
         match rng.gen_range(0..7) {
-            0 => Tetromino::new(l, 0xC16815),
-            1 => Tetromino::new(j, 0x141BCB),
-            2 => Tetromino::new(o, 0xCBCC24),
-            3 => Tetromino::new(i, 0x58CCCD),
-            4 => Tetromino::new(t, 0x0E22CB),
-            5 => Tetromino::new(z, 0xBE190F),
-            6 => Tetromino::new(s, 0x53CA1F),
+            0 => Tetromino::new(l, 0xC1_68_15),
+            1 => Tetromino::new(j, 0x14_1B_CB),
+            2 => Tetromino::new(o, 0xCB_CC_24),
+            3 => Tetromino::new(i, 0x58_CC_CD),
+            4 => Tetromino::new(t, 0x0E_22_CB),
+            5 => Tetromino::new(z, 0xBE_19_0F),
+            6 => Tetromino::new(s, 0x53_CA_1F),
             _ => unreachable!(),
         }
     }
