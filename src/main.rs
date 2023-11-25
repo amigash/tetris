@@ -1,7 +1,7 @@
 use graphics::render;
 use macroquad::prelude::*;
-use macroquad_canvas::Canvas2D;
 use std::collections::BTreeSet;
+use macroquad_canvas::Canvas2D;
 use tetromino::Tetromino;
 
 mod graphics;
@@ -9,16 +9,31 @@ mod tetromino;
 
 const WIDTH: usize = 10;
 const HEIGHT: usize = 20;
+const BLOCK_SIZE: f32 = 50.0;
 
-#[macroquad::main("Tetris")]
+const SCREEN_WIDTH: f32 = WIDTH as f32 * BLOCK_SIZE;
+const SCREEN_HEIGHT: f32 = HEIGHT as f32 * BLOCK_SIZE;
+
+fn window_conf() -> Conf {
+    Conf {
+        window_title: "Tetris".to_owned(),
+        window_width: SCREEN_WIDTH as i32,
+        window_height: SCREEN_HEIGHT as i32,
+        high_dpi: true,
+        ..Default::default()
+    }
+}
+
+#[macroquad::main(window_conf)]
 async fn main() {
     let mut game = Game::new();
     let mut frame: u32 = 0;
+    let mut canvas = Canvas2D::new(SCREEN_WIDTH, SCREEN_HEIGHT);
     loop {
         while get_time() < f64::from(frame + 1) / 3.0 {
             game.update_projection();
             game.handle_input();
-            render(&game);
+            render(&mut canvas, &game);
             next_frame().await;
         }
         game.update();
@@ -45,7 +60,6 @@ struct Game {
     projection_dy: usize,
     tetromino: Tetromino,
     projection: Tetromino,
-    canvas: Canvas2D,
 }
 
 impl Game {
@@ -65,7 +79,6 @@ impl Game {
             projection_dy: 0,
             tetromino,
             projection: tetromino,
-            canvas: Canvas2D::new(800.0, 600.0),
         }
     }
 

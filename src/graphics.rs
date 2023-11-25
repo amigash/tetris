@@ -1,24 +1,27 @@
 use crate::Game;
-use crate::{Block, HEIGHT, WIDTH};
+use crate::{Block, HEIGHT, WIDTH, BLOCK_SIZE};
 use macroquad::prelude::*;
+use macroquad_canvas::Canvas2D;
 
-pub fn render(game: &Game) {
+const TRANSPARENCY: f32 = 0.1;
+
+pub fn render(canvas: &mut Canvas2D, game: &Game) {
     fn draw_block(block: Block, color: Color) {
         draw_rectangle(
-            block.x as f32 * 20.0,
-            block.y as f32 * 20.0,
-            20.0,
-            20.0,
+            block.x as f32 * BLOCK_SIZE,
+            block.y as f32 * BLOCK_SIZE,
+            BLOCK_SIZE,
+            BLOCK_SIZE,
             color,
         );
     }
 
-    set_camera(&game.canvas.camera);
+    set_camera(&canvas.camera);
     clear_background(WHITE);
 
     for &[y, x] in &game.projection.blocks() {
         let mut color = Color::from_hex(game.projection.color);
-        color.a = 0.1;
+        color.a = TRANSPARENCY;
         let block = Block {
             x: x.saturating_add_signed(game.dx),
             y: y + game.projection_dy,
@@ -38,13 +41,13 @@ pub fn render(game: &Game) {
     draw_rectangle_lines(
         0.0,
         0.0,
-        WIDTH as f32 * 20.0,
-        HEIGHT as f32 * 20.0,
-        2.0,
+        WIDTH as f32 * BLOCK_SIZE,
+        HEIGHT as f32 * BLOCK_SIZE,
+        1.0,
         BLACK,
     );
 
     set_default_camera();
     clear_background(BLACK);
-    game.canvas.draw();
+    canvas.draw();
 }
