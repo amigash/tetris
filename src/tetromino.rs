@@ -73,13 +73,15 @@ enum Orientation {
 pub struct Tetromino {
     rotations: fn(orientation: &Orientation) -> [[usize; 2]; 4],
     orientation: Orientation,
+    pub color: u32
 }
 
 impl Tetromino {
-    fn new(rotations: fn(orientation: &Orientation) -> [[usize; 2]; 4]) -> Self {
+    fn new(rotations: fn(orientation: &Orientation) -> [[usize; 2]; 4], color: u32) -> Self {
         Tetromino {
             rotations,
             orientation: Orientation::Up,
+            color
         }
     }
     pub fn random() -> Self {
@@ -109,13 +111,13 @@ impl Tetromino {
 impl Distribution<Tetromino> for Standard {
     fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> Tetromino {
         match rng.gen_range(0..7) {
-            0 => Tetromino::new(l),
-            1 => Tetromino::new(j),
-            2 => Tetromino::new(o),
-            3 => Tetromino::new(i),
-            4 => Tetromino::new(t),
-            5 => Tetromino::new(z),
-            6 => Tetromino::new(s),
+            0 => Tetromino::new(l, 0xC16815),
+            1 => Tetromino::new(j, 0x141BCB),
+            2 => Tetromino::new(o, 0xCBCC24),
+            3 => Tetromino::new(i, 0x58CCCD),
+            4 => Tetromino::new(t, 0x0E22CB),
+            5 => Tetromino::new(z, 0xBE190F),
+            6 => Tetromino::new(s, 0x53CA1F),
             _ => unreachable!(),
         }
     }
