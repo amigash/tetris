@@ -73,7 +73,7 @@ enum Orientation {
 pub struct Tetromino {
     rotations: fn(orientation: Orientation) -> [[usize; 2]; 4],
     orientation: Orientation,
-    pub color: u32
+    pub color: u32,
 }
 
 impl Tetromino {
@@ -81,7 +81,7 @@ impl Tetromino {
         Tetromino {
             rotations,
             orientation: Orientation::Up,
-            color
+            color,
         }
     }
     pub fn random() -> Self {
