@@ -1,3 +1,4 @@
+use std::collections::BTreeSet;
 use macroquad::prelude::*;
 use macroquad_canvas::Canvas2D;
 use tetromino::Tetromino;
@@ -104,7 +105,7 @@ impl Game {
         self.blocks.iter().filter(|&&block| block.y == row).count() == WIDTH
     }
 
-    fn remove_rows(&mut self, rows: Vec<usize>) {
+    fn remove_rows(&mut self, rows: BTreeSet<usize>) {
         self.blocks.retain(|block| !rows.contains(&block.y));
 
         for row in rows {
@@ -166,13 +167,11 @@ impl Game {
     }
 
     fn place(&mut self) {
-        let mut rows = Vec::new();
+        let mut rows = BTreeSet::new();
         for [y, x] in self.tetromino.blocks() {
             self.blocks.push(self.block(y, x));
-            rows.push(y + self.dy);
+            rows.insert(y + self.dy);
         }
-        rows.sort_unstable();
-        rows.dedup();
         rows.retain(|&row| self.is_row_full(row));
         self.remove_rows(rows);
     }
