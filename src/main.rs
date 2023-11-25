@@ -1,8 +1,10 @@
 use macroquad::prelude::*;
 use macroquad_canvas::Canvas2D;
 use tetromino::Tetromino;
+use graphics::render;
 
 mod tetromino;
+mod graphics;
 
 const WIDTH: usize = 10;
 const HEIGHT: usize = 20;
@@ -15,7 +17,7 @@ async fn main() {
         while get_time() < f64::from(frame + 1) / 3.0 {
             game.update_projection();
             game.handle_input();
-            game.render();
+            render(&game);
             next_frame().await;
         }
         game.update();
@@ -173,52 +175,5 @@ impl Game {
         rows.dedup();
         rows.retain(|&row| self.is_row_full(row));
         self.remove_rows(rows);
-    }
-
-    fn render(&self) {
-        fn draw_block(block: Block, color: Color) {
-            draw_rectangle(
-                block.x as f32 * 20.0,
-                block.y as f32 * 20.0,
-                20.0,
-                20.0,
-                color,
-            );
-        }
-
-        set_camera(&self.canvas.camera);
-        clear_background(WHITE);
-
-        for &[y, x] in &self.projection.blocks() {
-            let mut color = Color::from_hex(self.projection.color);
-            color.a = 0.1;
-            let block = Block {
-                x: x.saturating_add_signed(self.dx),
-                y: y + self.projection_dy,
-                color: self.projection.color,
-            };
-            draw_block(block, color);
-        }
-
-        for &block in &self.blocks {
-            draw_block(block, Color::from_hex(block.color));
-        }
-
-        for &[y, x] in &self.tetromino.blocks() {
-            draw_block(self.block(y, x), Color::from_hex(self.tetromino.color));
-        }
-
-        draw_rectangle_lines(
-            0.0,
-            0.0,
-            WIDTH as f32 * 20.0,
-            HEIGHT as f32 * 20.0,
-            2.0,
-            BLACK,
-        );
-
-        set_default_camera();
-        clear_background(BLACK);
-        self.canvas.draw();
     }
 }
