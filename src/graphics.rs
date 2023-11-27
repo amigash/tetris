@@ -12,7 +12,8 @@ use crate::{
     WIDTH,
     Game,
     SCREEN_HEIGHT,
-    SCREEN_WIDTH
+    SCREEN_WIDTH,
+    LINES_TO_LEVEL
 };
 use macroquad_canvas::Canvas2D;
 
@@ -65,7 +66,7 @@ pub fn render(canvas: &mut Canvas2D, game: &Game) {
     set_default_camera();
 
     draw_text(
-        format!("Level: {}", game.lines_cleared / 10 + 1).as_str(),
+        format!("Level: {}", game.lines_cleared / LINES_TO_LEVEL + 1).as_str(),
         SCREEN_WIDTH / 20.0,
         SCREEN_HEIGHT / 15.0,
         100.0,

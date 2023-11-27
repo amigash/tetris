@@ -5,9 +5,6 @@ use macroquad::{
     time::get_time,
     window::{Conf, next_frame}
 };
-use macroquad::color::WHITE;
-use macroquad::text::draw_text;
-use macroquad::time::get_frame_time;
 use macroquad_canvas::Canvas2D;
 use tetromino::Tetromino;
 
@@ -19,7 +16,7 @@ const HEIGHT: usize = 20;
 const BLOCK_SIZE: f32 = 50.0;
 const SCREEN_WIDTH: f32 = WIDTH as f32 * BLOCK_SIZE;
 const SCREEN_HEIGHT: f32 = HEIGHT as f32 * BLOCK_SIZE;
-const LINES_TO_LEVEL: usize = 1;
+const LINES_TO_LEVEL: usize = 10;
 
 fn window_conf() -> Conf {
     Conf {
@@ -33,18 +30,15 @@ fn window_conf() -> Conf {
 #[macroquad::main(window_conf)]
 async fn main() {
     let mut game = Game::new();
-    let mut frame: u32 = 1;
-
     let mut canvas = Canvas2D::new(SCREEN_WIDTH, SCREEN_HEIGHT);
     loop {
-        while get_time() < f64::from(frame) * time_per_row(level(game.lines_cleared)) {
+        while game.seconds_since_last_update() < updates_per_second(game.lines_cleared) {
             game.update_projection();
             game.handle_input();
             render(&mut canvas, &game);
             next_frame().await;
         }
         game.update();
-        frame += 1;
     }
 }
 #[derive(Copy, Clone)]
@@ -68,6 +62,7 @@ struct Game {
     tetromino: Tetromino,
     projection: Tetromino,
     lines_cleared: usize,
+    last_frame_time: f64
 }
 
 impl Game {
@@ -88,6 +83,7 @@ impl Game {
             tetromino,
             projection: tetromino,
             lines_cleared: 0,
+            last_frame_time: 0.0
         }
     }
 
@@ -109,6 +105,7 @@ impl Game {
         } else {
             self.dy += 1;
         }
+        self.last_frame_time = get_time();
     }
 
     fn update_projection(&mut self) {
@@ -205,13 +202,13 @@ impl Game {
         self.lines_cleared += rows.len();
         self.remove_rows(rows);
     }
+
+    fn seconds_since_last_update(&self) -> f64 {
+        get_time() - self.last_frame_time
+    }
 }
 
-fn time_per_row(level: usize) -> f64 {
-    let level = level as f64;
+fn updates_per_second(lines_cleared: usize) -> f64 {
+    let level = (lines_cleared / LINES_TO_LEVEL) as f64;
     (0.8 - (level * 0.007)).powf(level)
-}
-
-fn level(lines_cleared: usize) -> usize {
-    lines_cleared / LINES_TO_LEVEL
 }
