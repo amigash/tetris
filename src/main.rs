@@ -77,7 +77,7 @@ impl Game {
         let tetromino = Tetromino::random();
         Self {
             blocks: Vec::new(),
-            dx: (WIDTH / 2 - 1) as isize,
+            dx: (WIDTH / 2 - 2) as isize,
             dy: 0,
             projection_dy: 0,
             tetromino,
@@ -92,7 +92,7 @@ impl Game {
         self.tetromino = tetromino;
         self.projection = tetromino;
         self.dy = 0;
-        self.dx = (WIDTH / 2 - 1) as isize;
+        self.dx = (WIDTH / 2 - 2) as isize;
         if self.is_vertical_collision() {
             *self = Self::new();
         }

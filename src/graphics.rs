@@ -34,6 +34,7 @@ pub fn render(canvas: &mut Canvas2D, game: &Game) {
 
     set_camera(&canvas.camera);
     clear_background(SECONDARY_COLOR);
+    draw_grid();
 
     let mut color = Color::from_hex(game.projection.color);
     color.a = TRANSPARENCY;
@@ -81,4 +82,30 @@ pub fn render(canvas: &mut Canvas2D, game: &Game) {
         PRIMARY_COLOR,
     );
     canvas.draw();
+}
+
+fn draw_grid() {
+    let mut color = PRIMARY_COLOR;
+    color.a = TRANSPARENCY;
+    for x in 0..WIDTH {
+        draw_rectangle_lines(
+            x as f32 * BLOCK_SIZE,
+            0.0,
+            BLOCK_SIZE,
+            HEIGHT as f32 * BLOCK_SIZE,
+            1.0,
+            color,
+        );
+    }
+
+    for y in 0..HEIGHT {
+        draw_rectangle_lines(
+            0.0,
+            y as f32 * BLOCK_SIZE,
+            WIDTH as f32 * BLOCK_SIZE,
+            BLOCK_SIZE,
+            1.0,
+            color,
+        );
+    }
 }
