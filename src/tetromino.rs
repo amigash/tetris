@@ -115,7 +115,7 @@ impl Distribution<Tetromino> for Standard {
             1 => Tetromino::new(j, 0x14_1B_CB),
             2 => Tetromino::new(o, 0xCB_CC_24),
             3 => Tetromino::new(i, 0x58_CC_CD),
-            4 => Tetromino::new(t, 0x0E_22_CB),
+            4 => Tetromino::new(t, 0x91_22_CB),
             5 => Tetromino::new(z, 0xBE_19_0F),
             6 => Tetromino::new(s, 0x53_CA_1F),
             _ => unreachable!(),
