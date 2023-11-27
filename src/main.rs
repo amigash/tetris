@@ -66,7 +66,7 @@ struct Game {
 }
 
 impl Game {
-    fn block(&self, y: usize, x: usize) -> Block {
+    const fn block(&self, y: usize, x: usize) -> Block {
         Block {
             x: x.saturating_add_signed(self.dx),
             y: y + self.dy,
