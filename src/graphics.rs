@@ -1,9 +1,24 @@
-use crate::Game;
-use crate::{Block, HEIGHT, WIDTH, BLOCK_SIZE};
-use macroquad::prelude::*;
+use macroquad::{
+    text::draw_text,
+    shapes::{draw_rectangle, draw_rectangle_lines},
+    color::{BLACK, Color, WHITE},
+    camera::{set_camera, set_default_camera},
+    window::clear_background
+};
+use crate::{
+    Block,
+    BLOCK_SIZE,
+    HEIGHT,
+    WIDTH,
+    Game,
+    SCREEN_HEIGHT,
+    SCREEN_WIDTH
+};
 use macroquad_canvas::Canvas2D;
 
-const TRANSPARENCY: f32 = 0.1;
+const TRANSPARENCY: f32 = 0.25;
+const PRIMARY_COLOR: Color = WHITE;
+const SECONDARY_COLOR: Color = BLACK;
 
 pub fn render(canvas: &mut Canvas2D, game: &Game) {
     fn draw_block(block: Block, color: Color) {
@@ -17,11 +32,11 @@ pub fn render(canvas: &mut Canvas2D, game: &Game) {
     }
 
     set_camera(&canvas.camera);
-    clear_background(WHITE);
+    clear_background(SECONDARY_COLOR);
 
+    let mut color = Color::from_hex(game.projection.color);
+    color.a = TRANSPARENCY;
     for &[y, x] in &game.projection.blocks() {
-        let mut color = Color::from_hex(game.projection.color);
-        color.a = TRANSPARENCY;
         let block = Block {
             x: x.saturating_add_signed(game.dx),
             y: y + game.projection_dy,
@@ -43,11 +58,26 @@ pub fn render(canvas: &mut Canvas2D, game: &Game) {
         0.0,
         WIDTH as f32 * BLOCK_SIZE,
         HEIGHT as f32 * BLOCK_SIZE,
-        1.0,
-        BLACK,
+        5.0,
+        PRIMARY_COLOR,
     );
 
     set_default_camera();
-    clear_background(BLACK);
+
+    draw_text(
+        format!("Level: {}", game.lines_cleared / 10 + 1).as_str(),
+        SCREEN_WIDTH / 20.0,
+        SCREEN_HEIGHT / 15.0,
+        100.0,
+        PRIMARY_COLOR,
+    );
+
+    draw_text(
+        format!("Score: {}", game.lines_cleared).as_str(),
+        SCREEN_WIDTH / 20.0,
+        SCREEN_HEIGHT / 8.0,
+        100.0,
+        PRIMARY_COLOR,
+    );
     canvas.draw();
 }

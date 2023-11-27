@@ -1,6 +1,13 @@
 use graphics::render;
-use macroquad::prelude::*;
 use std::collections::BTreeSet;
+use macroquad::{
+    input::{get_last_key_pressed, KeyCode},
+    time::get_time,
+    window::{Conf, next_frame}
+};
+use macroquad::color::WHITE;
+use macroquad::text::draw_text;
+use macroquad::time::get_frame_time;
 use macroquad_canvas::Canvas2D;
 use tetromino::Tetromino;
 
@@ -10,16 +17,15 @@ mod tetromino;
 const WIDTH: usize = 10;
 const HEIGHT: usize = 20;
 const BLOCK_SIZE: f32 = 50.0;
-
 const SCREEN_WIDTH: f32 = WIDTH as f32 * BLOCK_SIZE;
 const SCREEN_HEIGHT: f32 = HEIGHT as f32 * BLOCK_SIZE;
+const LINES_TO_LEVEL: usize = 1;
 
 fn window_conf() -> Conf {
     Conf {
         window_title: "Tetris".to_owned(),
-        window_width: SCREEN_WIDTH as i32,
-        window_height: SCREEN_HEIGHT as i32,
         high_dpi: true,
+        fullscreen: true,
         ..Default::default()
     }
 }
@@ -27,10 +33,11 @@ fn window_conf() -> Conf {
 #[macroquad::main(window_conf)]
 async fn main() {
     let mut game = Game::new();
-    let mut frame: u32 = 0;
+    let mut frame: u32 = 1;
+
     let mut canvas = Canvas2D::new(SCREEN_WIDTH, SCREEN_HEIGHT);
     loop {
-        while get_time() < f64::from(frame + 1) / 3.0 {
+        while get_time() < f64::from(frame) * time_per_row(level(game.lines_cleared)) {
             game.update_projection();
             game.handle_input();
             render(&mut canvas, &game);
@@ -60,6 +67,7 @@ struct Game {
     projection_dy: usize,
     tetromino: Tetromino,
     projection: Tetromino,
+    lines_cleared: usize,
 }
 
 impl Game {
@@ -79,6 +87,7 @@ impl Game {
             projection_dy: 0,
             tetromino,
             projection: tetromino,
+            lines_cleared: 0,
         }
     }
 
@@ -88,6 +97,9 @@ impl Game {
         self.projection = tetromino;
         self.dy = 0;
         self.dx = (WIDTH / 2 - 1) as isize;
+        if self.is_vertical_collision() {
+            *self = Self::new();
+        }
     }
 
     fn update(&mut self) {
@@ -190,6 +202,16 @@ impl Game {
             rows.insert(y + self.dy);
         }
         rows.retain(|&row| self.is_row_full(row));
+        self.lines_cleared += rows.len();
         self.remove_rows(rows);
     }
+}
+
+fn time_per_row(level: usize) -> f64 {
+    let level = level as f64;
+    (0.8 - (level * 0.007)).powf(level)
+}
+
+fn level(lines_cleared: usize) -> usize {
+    lines_cleared / LINES_TO_LEVEL
 }
